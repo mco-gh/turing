@@ -11,9 +11,11 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = 'your-secret-key'
 socketio = SocketIO(app)
 
-# Store socket IDs for the human and the tester
-human_socket_id = None
+# Store socket IDs for the tester and the human
 test_socket_id = None
+gpt_time_sent = None
+human_socket_id = None
+human_time_sent = None
 
 @app.route('/')
 def index():
@@ -37,23 +39,29 @@ def handle_register(role):
 # Handle incoming messages from the tester
 @socketio.on('message')
 def handle_message(message):
-    global human_socket_id, test_socket_id
+    global human_time_sent, gpt_time_sent, human_socket_id, test_socket_id
 
     # Relay the message to the human participant if connected
     if human_socket_id:
+        human_time_sent = time.time()
         socketio.emit('message', message, room=human_socket_id)
 
     # Fetch ChatGPT response and send it back to the tester
     prompt = f"""
 Respond with a one sentence answer to the following:
 {message}"""
+    gpt_time_sent = time.time()
     chatgpt_response = get_chatgpt_response(prompt)
-    time.sleep(SLEEP_TIME)
+    wait_time = max(0, SLEEP_TIME - (time.time() - gpt_time_sent))
+    time.sleep(wait_time)
     socketio.emit('response', {'source': 'chatgpt', 'message': chatgpt_response.content}, room=test_socket_id)
 
 # Handle incoming responses from the human
 @socketio.on('human_response')
 def handle_human_response(message):
+    global human_time_sent
+    wait_time = max(0, SLEEP_TIME - (time.time() - human_time_sent))
+    time.sleep(wait_time)
     # Relay human response to the tester
     socketio.emit('response', {'source': 'human', 'message': message}, room=test_socket_id)
     # Relay human response to the human
