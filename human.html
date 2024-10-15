@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Human Participant</title>
+  <style>
+    .chat-box {
+      width: 100%;
+      border: 1px solid #ccc;
+      padding: 10px;
+    }
+    .messages {
+      height: 300px;
+      overflow-y: scroll;
+      border: 1px solid #ccc;
+      padding: 5px;
+    }
+    input {
+      width: 100%;
+    }
+  </style>
+</head>
+<body>
+  <div class="chat-box">
+    <h3>Your Chat</h3>
+    <div class="messages" id="messages"></div>
+  </div>
+
+  <input type="text" id="message-input" placeholder="Type your message here..." />
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    const socket = io();
+
+    // Register as the human participant
+    socket.emit('register', 'human');
+
+    const messages = document.getElementById('messages');
+    const input = document.getElementById('message-input');
+
+    input.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') {
+        const message = input.value;
+        socket.emit('message', message);
+        input.value = '';
+      }
+    });
+
+    socket.on('message', function(msg) {
+      messages.innerHTML += `<p>${msg}</p>`;
+    });
+  </script>
+</body>
+</html>
