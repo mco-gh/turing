@@ -46,9 +46,14 @@
     // Register as the tester
     socket.emit('register', 'tester');
 
-    const chat1 = document.getElementById('chat1');
-    const chat2 = document.getElementById('chat2');
+    var chat1 = document.getElementById('chat1');
+    var chat2 = document.getElementById('chat2');
     const input = document.getElementById('message-input');
+
+    if (Math.random() < 0.5) {
+        // reverse human and chatbot
+        [chat1, chat2] = [chat2, chat1]
+    }
 
     input.addEventListener('keydown', function(e) {
       if (e.key === 'Enter') {
