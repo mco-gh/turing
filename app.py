@@ -5,7 +5,7 @@ import os
 import requests
 import time
 
-SLEEP_TIME = 7
+SLEEP_TIME = 10
 PORT = os.environ.get('PORT', 8080)
 
 client = OpenAI()
@@ -50,7 +50,7 @@ def handle_message(message):
 
     # Fetch ChatGPT response and send it back to the tester
     prompt = f"""
-Respond with a one sentence answer to the following:
+Respond as if you were a typical 64 year old woman, with 10 words or less, to the following:
 {message}"""
     gpt_time_sent = time.time()
     chatgpt_response = get_chatgpt_response(prompt)
