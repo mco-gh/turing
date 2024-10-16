@@ -1,14 +1,16 @@
 from flask import Flask, render_template, request
 from flask_socketio import SocketIO, emit, join_room
 from openai import OpenAI
+import os
 import requests
 import time
 
 SLEEP_TIME = 5
+PORT = os.environ.get('PORT', 8080)
 
 client = OpenAI()
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'your-secret-key'
+#app.config['SECRET_KEY'] = 'your-secret-key'
 socketio = SocketIO(app)
 
 # Store socket IDs for the tester and the human
@@ -83,4 +85,4 @@ def get_chatgpt_response(message):
         return "Error: Unable to fetch response from ChatGPT."
 
 if __name__ == '__main__':
-    socketio.run(app, debug=True)
+    socketio.run(app, port=PORT, debug=True)
