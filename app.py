@@ -5,7 +5,7 @@ import os
 import requests
 import time
 
-SLEEP_TIME = 5
+SLEEP_TIME = 7
 PORT = os.environ.get('PORT', 8080)
 
 client = OpenAI()
@@ -67,7 +67,7 @@ def handle_human_response(message):
     # Relay human response to the tester
     socketio.emit('response', {'source': 'human', 'message': message}, room=test_socket_id)
     # Relay human response to the human
-    socketio.emit('message', message, room=human_socket_id)
+    socketio.emit('you', message, room=human_socket_id)
 
 # Fetch response from OpenAI's API (ChatGPT)
 def get_chatgpt_response(message):
